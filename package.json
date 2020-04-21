@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "submitBeacon": "ts-node src/ts/submitBeacon.ts"
+    "submitBeacon": "ts-node src/ts/submitBeacon.ts",
+    "generateSeed": "ts-node src/ts/generateSeed.ts"
   },
   "devDependencies": {},
   "dependencies": {

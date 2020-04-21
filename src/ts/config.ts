@@ -10,4 +10,4 @@ export const DEPOSIT_CONFIRMATIONS = 40; // Must wait this long before any.sende
 export const INFURA_PROJECT_ID = "";
 export const NETWORK_NAME = "mainnet";
 export const ORACLE_CONTRACT_ADDRESS = "";
-export const ORACLE_MNEMONIC = "";
+export const ORACLE_MNEMONIC = ""; // Filled in by our competition script.
