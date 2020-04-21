@@ -107,7 +107,7 @@ async function sendBeacon(
   );
 
   consolelog(
-    "*** You are running the any.sender competition script on " +
+    "*** You are running the oracle submission script on " +
       NETWORK_NAME +
       " ***"
   );
@@ -122,11 +122,11 @@ async function sendBeacon(
 
   // Sanity check minimum balance.
   const bal = await provider.getBalance(user.address);
-  if (bal.lt(parseEther("0.03"))) {
+  if (bal.lt(parseEther("0.01"))) {
     consolelog(
       "Your balance is " +
         bal.toString() +
-        ". Please top it up to 0.03 eth or more."
+        ". Please top it up to 0.01 eth or more."
     );
     return;
   }
@@ -138,7 +138,7 @@ async function sendBeacon(
       DEPOSIT_CONFIRMATIONS +
       " confirmations"
   );
-  await onchainDepositFor(parseEther("0.029"), user);
+  await onchainDepositFor(parseEther("0.009"), user);
 
   // What is the user's any.sender balance?
   const balance = await getAnySenderBalance(user);
