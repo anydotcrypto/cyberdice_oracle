@@ -13,7 +13,6 @@
 
 import { ethers, Wallet } from "ethers";
 import { Provider } from "ethers/providers";
-
 import {
   sendToAnySender,
   watchRelayTx,
@@ -21,14 +20,17 @@ import {
   getAnySenderBalance,
   consolelog,
 } from "./utils";
+import fetch from "cross-fetch";
 import {
   INFURA_PROJECT_ID,
   ORACLE_MNEMONIC,
   NETWORK_NAME,
   DEPOSIT_CONFIRMATIONS,
   ORACLE_CONTRACT_ADDRESS,
+  URLS,
+  ROUND_NUMBER,
 } from "./config";
-import { parseEther } from "ethers/utils";
+import { parseEther, keccak256, defaultAbiCoder } from "ethers/utils";
 import { CommunityOracleFactory } from "../typedContracts/CommunityOracleFactory";
 
 /**
@@ -83,12 +85,69 @@ async function sendBeacon(
 }
 
 /**
+ * Fetches the beacon from the League of Entropy oracles
+ */
+async function fetchBeacon(url: string, roundNumber: number) {
+  const response = await fetch(url + roundNumber, {
+    method: "GET",
+  });
+
+  const json = await response.json();
+
+  if (json["round"] === roundNumber) {
+    const signature = json["signature"];
+    const randomness = json["randomness"];
+    if (randomness.length === 64 && signature.length === 192) {
+      const h = keccak256(
+        defaultAbiCoder.encode(["string", "string"], [randomness, signature])
+      );
+      return h;
+    }
+  }
+
+  consolelog(
+    "There was a problem fetching the beacon. Please check the URL or ROUND_NUMBER."
+  );
+  consolelog("JSON received:");
+  consolelog(json);
+  process.exit(0);
+}
+
+/**
  * We have filled in most of the program for you.
  * Go to sendTicket() to fill in the blanks.
  */
 (async () => {
   // ricmoo this is ur fault
   console.log = () => {};
+
+  const results: string[] = [];
+  // Fetch results
+  for (const url of URLS) {
+    const h = await fetchBeacon(url, ROUND_NUMBER);
+
+    // This should never happen, but just in case.
+    if (h.length !== 66) {
+      consolelog("Beacon provider " + url + " did not return a valid hash");
+    }
+    results.push(h);
+  }
+
+  // Check all results.
+  // Really - we should check the BLS signature. But
+  // I couldn't get https://www.npmjs.com/package/noble-bls12-381 to work.
+  // Someday, maybe someone else will. But for the 3 ETH prize, this should be
+  // good enough.
+  for (let i = 0; i < results.length; i++) {
+    for (let j = 1; j < results.length; j++) {
+      if (results[i] !== results[j]) {
+        consolelog("The beacon providers did not return a consistent beacon");
+        process.exit(0);
+      }
+    }
+  }
+
+  consolelog("Beacon: " + results[0]);
 
   // Sanity check the config.ts is filled in.
   if (ORACLE_MNEMONIC.length === 0 || INFURA_PROJECT_ID.length === 0) {
@@ -145,7 +204,7 @@ async function sendBeacon(
   consolelog("Balance on any.sender: " + balance.toString() + " wei");
 
   // Send ticket to any.sender
-  await sendBeacon("123", user, provider, oracleCon);
+  await sendBeacon(results[0], user, provider, oracleCon);
 })().catch((e) => {
   consolelog(e);
   // Deal with the fact the chain failed
