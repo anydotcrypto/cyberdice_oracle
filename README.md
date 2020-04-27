@@ -11,7 +11,14 @@ Again, thank you very much for agreeng to be an oracle for our competition!
 You only need to edit 1 file:
 - config.ts
 
-You need to insert your 12-word seed:
+You need a 12-word seed. Insert your own or run:
+
+``` 
+npm i
+npm run generateSeed
+```
+
+You should find this filled in the config.ts
 
 ```
 export const ORACLE_MNEMONIC = "your twelve word seed must be entered here so lets do it"
