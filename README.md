@@ -14,6 +14,7 @@ You only need to edit 1 file:
 You need a 12-word seed. Insert your own or run:
 
 ``` 
+npm i
 npm run generateSeed
 ```
 
