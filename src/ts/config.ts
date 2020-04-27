@@ -19,4 +19,4 @@ export const URLS = [
   "https://drand.zerobyte.io:8765/api/public/",
 ];
 
-export const ROUND_NUMBER = 800;
+export const ROUND_NUMBER = 820; // Approximately 6:09pm UK
