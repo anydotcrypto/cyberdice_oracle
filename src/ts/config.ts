@@ -14,9 +14,9 @@ export const ORACLE_MNEMONIC = ""; // Filled in by our competition script.
 
 // League of Entropy
 export const URLS = [
-  "http://ec2-3-21-56-248.us-east-2.compute.amazonaws.com:1337/api/public/",
+  "https://cryptoparty.london:1337/api/public/",
   "https://drand.cyberdice.nikkolasg.xyz:1969/api/public/",
   "https://drand.zerobyte.io:8765/api/public/",
 ];
 
-export const ROUND_NUMBER = 82828282;
+export const ROUND_NUMBER = 800;
