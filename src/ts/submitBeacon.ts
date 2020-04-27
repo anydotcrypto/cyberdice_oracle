@@ -121,34 +121,6 @@ async function fetchBeacon(url: string, roundNumber: number) {
   // ricmoo this is ur fault
   console.log = () => {};
 
-  const results: string[] = [];
-  // Fetch results
-  for (const url of URLS) {
-    const h = await fetchBeacon(url, ROUND_NUMBER);
-
-    // This should never happen, but just in case.
-    if (h.length !== 66) {
-      consolelog("Beacon provider " + url + " did not return a valid hash");
-    }
-    results.push(h);
-  }
-
-  // Check all results.
-  // Really - we should check the BLS signature. But
-  // I couldn't get https://www.npmjs.com/package/noble-bls12-381 to work.
-  // Someday, maybe someone else will. But for the 3 ETH prize, this should be
-  // good enough.
-  for (let i = 0; i < results.length; i++) {
-    for (let j = 1; j < results.length; j++) {
-      if (results[i] !== results[j]) {
-        consolelog("The beacon providers did not return a consistent beacon");
-        process.exit(0);
-      }
-    }
-  }
-
-  consolelog("Beacon: " + results[0]);
-
   // Sanity check the config.ts is filled in.
   if (ORACLE_MNEMONIC.length === 0 || INFURA_PROJECT_ID.length === 0) {
     consolelog(
@@ -178,6 +150,34 @@ async function fetchBeacon(url: string, roundNumber: number) {
 
   const submitted = await oracleCon.oracleSubmitted(user.address);
   consolelog("Have you already submitted? " + submitted);
+
+  const results: string[] = [];
+  // Fetch results
+  for (const url of URLS) {
+    const h = await fetchBeacon(url, ROUND_NUMBER);
+
+    // This should never happen, but just in case.
+    if (h.length !== 66) {
+      consolelog("Beacon provider " + url + " did not return a valid hash");
+    }
+    results.push(h);
+  }
+
+  // Check all results.
+  // Really - we should check the BLS signature. But
+  // I couldn't get https://www.npmjs.com/package/noble-bls12-381 to work.
+  // Someday, maybe someone else will. But for the 3 ETH prize, this should be
+  // good enough.
+  for (let i = 0; i < results.length; i++) {
+    for (let j = 1; j < results.length; j++) {
+      if (results[i] !== results[j]) {
+        consolelog("The beacon providers did not return a consistent beacon");
+        process.exit(0);
+      }
+    }
+  }
+
+  consolelog("Beacon: " + results[0]);
 
   // Sanity check minimum balance.
   const bal = await provider.getBalance(user.address);
